@@ -1,0 +1,20 @@
+{
+  "name": "@hubchat/react-native",
+  "version": "1.0.0",
+  "description": "HubChat support chat widget for React Native (iOS & Android)",
+  "main": "src/index.tsx",
+  "types": "src/index.tsx",
+  "files": [
+    "src"
+  ],
+  "license": "MIT",
+  "peerDependencies": {
+    "react": ">=17",
+    "react-native": ">=0.68",
+    "react-native-webview": ">=11"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/HubChat-ai/hubchat-react-native.git"
+  }
+}
