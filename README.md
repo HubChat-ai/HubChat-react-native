@@ -1,14 +1,14 @@
-# @hubchat/react-native
+# hubchat-react-native
 
 ویجت چت پشتیبانی هاب‌چت برای اپ‌های React Native (iOS و اندروید)، با همان ظاهر و امکانات ویجت سایت.
 
 ```bash
-npm install github:HubChat-ai/hubchat-react-native#1.0.0 react-native-webview
+npm install hubchat-react-native react-native-webview
 cd ios && pod install
 ```
 
 ```tsx
-import { HubChatProvider, useHubChat } from '@hubchat/react-native';
+import { HubChatProvider, useHubChat } from 'hubchat-react-native';
 
 export default function App() {
   return (
