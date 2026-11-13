@@ -2,11 +2,23 @@
 
 ویجت چت پشتیبانی هاب‌چت برای اپ‌های React Native (iOS و اندروید)، با همان ظاهر و امکانات ویجت سایت.
 
+## امکانات
+- دکمه‌ی شناور با رنگ، آیکن، متن و جایگاهی که در پنل هاب‌چت تنظیم کرده‌اید
+- پنل گفتگو با همان ظاهر و امکانات ویجت سایت: ارسال فایل و عکس، پایگاه دانش، ساعات کاری و نظرسنجی رضایت
+- شمارنده‌ی پیام‌های خوانده‌نشده روی دکمه، حتی وقتی پنل بسته است
+- تغییر ظاهر از پنل، بدون نیاز به انتشار نسخه‌ی جدید اپ
+- پیام‌های کاربران در صندوق ورودی هاب‌چت، کنار تلگرام، بله، روبیکا و بقیه‌ی کانال‌ها
+
+## کلید کانال
+کلید را از پنل هاب‌چت بگیرید: «تنظیمات > کانال‌ها > افزودن کانال > اپلیکیشن موبایل». کلید با `hc_` شروع می‌شود و در صفحه‌ی همان کانال، کنار نمونه‌کد نصب، نمایش داده می‌شود.
+
+## نصب
 ```bash
 npm install hubchat-react-native react-native-webview
 cd ios && pod install
 ```
 
+## استفاده
 ```tsx
 import { HubChatProvider, useHubChat } from 'hubchat-react-native';
 
@@ -24,6 +36,7 @@ function SupportButton() {
 }
 ```
 
+## ویژگی‌ها (props)
 | prop | توضیح |
 |---|---|
 | `widgetKey` | کلید ویجت از پنل (`hc_...`) |
@@ -32,7 +45,10 @@ function SupportButton() {
 | `onUnreadChange` | تعداد پیام‌های خوانده‌نشده |
 | `onEvent` | رویدادهای `ready`، `close`، `unread` |
 
+## تنظیمات iOS
 برای آپلود فایل در iOS این کلیدها را به `Info.plist` اضافه کنید: `NSCameraUsageDescription`، `NSPhotoLibraryUsageDescription`، `NSMicrophoneUsageDescription`.
 
-## نحوه‌ی کار
-تنظیمات دکمه از `GET https://widget.hubchat.ir/widget/{key}/config` خوانده و دکمه‌ی شناور به‌صورت نیتیو ساخته می‌شود. خود صفحه‌ی ویجت (`/widget/{key}`)، همان صفحه‌ای که روی سایت در iframe باز می‌شود، در WebView بارگذاری می‌شود؛ پس ظاهر و امکانات پنل دقیقاً مثل سایت است. SDK پیش از بارگذاری صفحه `window.HubChatBridge.postMessage` را تعریف می‌کند و ویجت رویدادهای `ready`، `close` و `unread` را از آن می‌فرستد.
+## پشتیبانی
+- مستندات: https://hubchat.ir/docs/connect-channel/mobile_sdk
+- گزارش مشکل: بخش Issues همین مخزن
+- وب‌سایت: https://hubchat.ir

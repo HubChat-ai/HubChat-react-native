@@ -8,7 +8,7 @@ export type { HubChatSettings, HubChatEvent } from './protocol';
 export type HubChatProps = {
     /** Widget key from the HubChat panel (hc_...). */
     widgetKey: string;
-    /** Override the widget host (self-hosted / staging). */
+    /** Custom widget host. Leave empty to use https://widget.hubchat.ir. */
     baseUrl?: string;
     /** Show the floating launcher button. Set false to open only via ref / useHubChat(). */
     showLauncher?: boolean;
