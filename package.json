@@ -1,6 +1,6 @@
 {
   "name": "hubchat-react-native",
-  "version": "1.0.3",
+  "version": "1.0.4",
   "description": "HubChat support chat widget for React Native (iOS & Android)",
   "main": "src/index.tsx",
   "types": "src/index.tsx",

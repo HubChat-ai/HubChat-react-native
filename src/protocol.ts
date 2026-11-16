@@ -51,6 +51,13 @@ export function screenCommand(name: string, title?: string): string | null {
     return `window.postMessage(${JSON.stringify(payload)},'*');true;`;
 }
 
+/** Identifies the logged-in user; see https://hubchat.ir/docs/widget-identify */
+export function identifyCommand(user: Record<string, unknown>): string {
+    return `window.postMessage(${JSON.stringify({ source: 'hubchat-loader', type: 'identify', user })},'*');true;`;
+}
+
+export const logoutCommand = "window.postMessage({source:'hubchat-loader',type:'logout'},'*');true;";
+
 /** Same contrast rule as widget.js so launcher text color matches the website. */
 export function contrastOn(hex: string): string {
     const channel = (offset: number) => {

@@ -46,6 +46,22 @@ const hubChat = useHubChat();
 hubChat.setScreen('checkout', 'تکمیل خرید');
 ```
 
+### معرفی کاربر لاگین‌کرده
+
+```tsx
+hubChat.identify({
+  user_id: user.id,
+  name: user.fullName,
+  mobile: user.mobile,
+  custom: { plan: 'VIP' },
+  signature: signatureFromYourServer, // HMAC-SHA256 شناسه با کلید مخفی، روی سرور
+});
+
+hubChat.logout(); // هنگام خروج از حساب
+```
+
+همه‌ی فیلدها و روش ساخت امضا: https://hubchat.ir/docs/widget-identify
+
 ## ویژگی‌ها (props)
 | prop | توضیح |
 |---|---|

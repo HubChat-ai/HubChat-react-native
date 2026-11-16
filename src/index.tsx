@@ -1,7 +1,7 @@
 import React, { createContext, forwardRef, useCallback, useContext, useEffect, useImperativeHandle, useMemo, useRef, useState } from 'react';
 import { Animated, Image, Platform, Pressable, SafeAreaView, StyleSheet, Text, View, type ViewStyle } from 'react-native';
 import { WebView, type WebViewMessageEvent } from 'react-native-webview';
-import { contrastOn, DEFAULT_BASE_URL, faDigits, fetchSettings, hostCommand, screenCommand, widgetUrl, type HubChatEvent, type HubChatSettings } from './protocol';
+import { contrastOn, DEFAULT_BASE_URL, faDigits, fetchSettings, hostCommand, identifyCommand, logoutCommand, screenCommand, widgetUrl, type HubChatEvent, type HubChatSettings } from './protocol';
 
 export type { HubChatSettings, HubChatEvent } from './protocol';
 
@@ -18,7 +18,7 @@ export type HubChatProps = {
     onUnreadChange?: (count: number) => void;
 };
 
-export type HubChatHandle = { open: () => void; close: () => void; isOpen: () => boolean; setScreen: (name: string, title?: string) => void };
+export type HubChatHandle = { open: () => void; close: () => void; isOpen: () => boolean; setScreen: (name: string, title?: string) => void; identify: (user: Record<string, unknown>) => void; logout: () => void };
 
 const HubChatContext = createContext<HubChatHandle | null>(null);
 
@@ -94,7 +94,39 @@ export const HubChat = forwardRef<HubChatHandle, HubChatProps>(function HubChat(
         }
     }, []);
 
-    const handle = useMemo<HubChatHandle>(() => ({ open: show, close: hide, isOpen: () => openRef.current, setScreen }), [show, hide, setScreen]);
+    /** Last identify payload (re-sent when the widget page reloads) and a pending logout. */
+    const identityRef = useRef<string | null>(null);
+    const logoutRef = useRef(false);
+    const sendIdentity = useCallback(() => {
+        if (!webView.current) {
+            return;
+        }
+
+        if (logoutRef.current) {
+            logoutRef.current = false;
+            webView.current.injectJavaScript(logoutCommand);
+        }
+
+        if (identityRef.current) {
+            webView.current.injectJavaScript(identityRef.current);
+        }
+    }, []);
+    const identify = useCallback((user: Record<string, unknown>) => {
+        identityRef.current = identifyCommand(user);
+        setMounted(true);
+        sendIdentity();
+    }, [sendIdentity]);
+    const logout = useCallback(() => {
+        identityRef.current = null;
+        logoutRef.current = true;
+        setMounted(true);
+        sendIdentity();
+    }, [sendIdentity]);
+
+    const handle = useMemo<HubChatHandle>(
+        () => ({ open: show, close: hide, isOpen: () => openRef.current, setScreen, identify, logout }),
+        [show, hide, setScreen, identify, logout],
+    );
 
     useImperativeHandle(ref, () => handle, [handle]);
 
@@ -117,6 +149,10 @@ export const HubChat = forwardRef<HubChatHandle, HubChatProps>(function HubChat(
 
         if (data.type === 'ready' && screenRef.current) {
             webView.current?.injectJavaScript(screenRef.current);
+        }
+
+        if (data.type === 'ready') {
+            sendIdentity();
         }
 
         if (data.type === 'ready' && openRef.current) {
@@ -197,6 +233,8 @@ export function HubChatProvider({ children, ...props }: HubChatProps & { childre
         open: () => ref.current?.open(),
         close: () => ref.current?.close(),
         setScreen: (name: string, title?: string) => ref.current?.setScreen(name, title),
+        identify: (user: Record<string, unknown>) => ref.current?.identify(user),
+        logout: () => ref.current?.logout(),
         isOpen: () => ref.current?.isOpen() ?? false,
     }), []);
 
