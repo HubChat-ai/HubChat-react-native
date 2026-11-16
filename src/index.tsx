@@ -1,7 +1,7 @@
 import React, { createContext, forwardRef, useCallback, useContext, useEffect, useImperativeHandle, useMemo, useRef, useState } from 'react';
 import { Animated, Image, Platform, Pressable, SafeAreaView, StyleSheet, Text, View, type ViewStyle } from 'react-native';
 import { WebView, type WebViewMessageEvent } from 'react-native-webview';
-import { contrastOn, DEFAULT_BASE_URL, faDigits, fetchSettings, hostCommand, widgetUrl, type HubChatEvent, type HubChatSettings } from './protocol';
+import { contrastOn, DEFAULT_BASE_URL, faDigits, fetchSettings, hostCommand, screenCommand, widgetUrl, type HubChatEvent, type HubChatSettings } from './protocol';
 
 export type { HubChatSettings, HubChatEvent } from './protocol';
 
@@ -18,7 +18,7 @@ export type HubChatProps = {
     onUnreadChange?: (count: number) => void;
 };
 
-export type HubChatHandle = { open: () => void; close: () => void; isOpen: () => boolean };
+export type HubChatHandle = { open: () => void; close: () => void; isOpen: () => boolean; setScreen: (name: string, title?: string) => void };
 
 const HubChatContext = createContext<HubChatHandle | null>(null);
 
@@ -84,7 +84,17 @@ export const HubChat = forwardRef<HubChatHandle, HubChatProps>(function HubChat(
         webView.current?.injectJavaScript(hostCommand('closed'));
     }, []);
 
-    const handle = useMemo<HubChatHandle>(() => ({ open: show, close: hide, isOpen: () => openRef.current }), [show, hide]);
+    /** Last app screen; re-sent when the widget page (re)loads. */
+    const screenRef = useRef<string | null>(null);
+    const setScreen = useCallback((name: string, title?: string) => {
+        screenRef.current = screenCommand(name, title);
+
+        if (screenRef.current) {
+            webView.current?.injectJavaScript(screenRef.current);
+        }
+    }, []);
+
+    const handle = useMemo<HubChatHandle>(() => ({ open: show, close: hide, isOpen: () => openRef.current, setScreen }), [show, hide, setScreen]);
 
     useImperativeHandle(ref, () => handle, [handle]);
 
@@ -103,6 +113,10 @@ export const HubChat = forwardRef<HubChatHandle, HubChatProps>(function HubChat(
 
         if (data.type === 'close') {
             hide();
+        }
+
+        if (data.type === 'ready' && screenRef.current) {
+            webView.current?.injectJavaScript(screenRef.current);
         }
 
         if (data.type === 'ready' && openRef.current) {
@@ -182,6 +196,7 @@ export function HubChatProvider({ children, ...props }: HubChatProps & { childre
     const handle = useMemo<HubChatHandle>(() => ({
         open: () => ref.current?.open(),
         close: () => ref.current?.close(),
+        setScreen: (name: string, title?: string) => ref.current?.setScreen(name, title),
         isOpen: () => ref.current?.isOpen() ?? false,
     }), []);
 

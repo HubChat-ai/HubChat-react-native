@@ -38,6 +38,19 @@ export function hostCommand(type: 'open' | 'closed'): string {
     return `window.postMessage({source:'hubchat-loader',type:'${type}'},'*');true;`;
 }
 
+/** Tells the widget which app screen the user is on (JSON-encoded, never string-built). */
+export function screenCommand(name: string, title?: string): string | null {
+    const path = name.trim().replace(/^\/+/, '');
+
+    if (!path) {
+        return null;
+    }
+
+    const payload = { source: 'hubchat-loader', type: 'page', url: `app://screen/${encodeURI(path)}`, title: title ?? name };
+
+    return `window.postMessage(${JSON.stringify(payload)},'*');true;`;
+}
+
 /** Same contrast rule as widget.js so launcher text color matches the website. */
 export function contrastOn(hex: string): string {
     const channel = (offset: number) => {

@@ -36,6 +36,16 @@ function SupportButton() {
 }
 ```
 
+
+### صفحه‌ی فعلی کاربر
+
+اپراتور کنار گفتگو می‌بیند کاربر الان در کدام صفحه‌ی اپ است:
+
+```tsx
+const hubChat = useHubChat();
+hubChat.setScreen('checkout', 'تکمیل خرید');
+```
+
 ## ویژگی‌ها (props)
 | prop | توضیح |
 |---|---|
