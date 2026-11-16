@@ -1,6 +1,6 @@
 /**
  * Shared protocol with the HubChat widget page (/widget/{key}).
- * The page calls window.HubChatBridge.postMessage(json) for: ready, close, unread.
+ * The page calls window.HubChatBridge.postMessage(json) for: ready, close, unread, identified.
  * The host opens/closes the panel with window.postMessage({source:'hubchat-loader', type}).
  */
 export const DEFAULT_BASE_URL = 'https://widget.hubchat.ir';
@@ -17,7 +17,8 @@ export type HubChatSettings = {
 export type HubChatEvent =
     | { type: 'ready' }
     | { type: 'close' }
-    | { type: 'unread'; count: number; preview?: string; agent?: string | null };
+    | { type: 'unread'; count: number; preview?: string; agent?: string | null }
+    | { type: 'identified'; verified: boolean };
 
 export function widgetUrl(baseUrl: string, widgetKey: string): string {
     return `${baseUrl.replace(/\/$/, '')}/widget/${widgetKey}`;
